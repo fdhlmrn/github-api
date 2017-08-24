@@ -65,8 +65,22 @@ class GithubController extends Controller
         $client = new Client;
         $url = 'https://api.github.com/users/' . $username . '/repos';
         $response = $client->get($url)->getBody();
-        $decode = json_decode($response, true);
-        dd($decode);
+        $repos = json_decode($response, true);
+        // dd($decode);
+        return view('repo', compact('repos'));
+    }
+
+    public function getEachRepo(Request $request)
+    {
+        // dd($request['url']);
+        $client = new Client;
+        $urlcommit = $request['url'] . '/commits';
+        $urlcomments = $request['url'] . '/issues';
+        $response1 = $client->get($urlcommit)->getBody();
+        $response2 = $client->get($urlcomments)->getBody();
+        $commits = json_decode($response1, true);
+        $comments = json_decode($response2, true);
+        dd($commits);
     }
 
     /**

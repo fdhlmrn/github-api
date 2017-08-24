@@ -17,3 +17,4 @@ Route::get('/', function () {
 
 Route::post('users', 'GithubController@show')->name('get-user');
 Route::post('users/repos', 'GithubController@getRepo')->name('get-repo');
+Route::post('users/repos/each', 'GithubController@getEachRepo')->name('get-each');
