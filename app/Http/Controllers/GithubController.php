@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Github;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 class GithubController extends Controller
 {
+    protected $gitHub;
+
+    public function __construct(Github $gitHub)
+    {
+        $this->gitHub = $gitHub;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -47,40 +55,27 @@ class GithubController extends Controller
     public function show(Request $request)
     {
         $username = $request->username;
-        $client = new Client;
-        $url = 'https://api.github.com/users/' . $username;
-        $response = $client->get($url);
-        $result = $response->getBody()->getContents();
-        $decode = json_decode($result, true);
-        // dd($decode);
-
+        $decode = $this->gitHub->getUser($username);
         return view('profile', compact('decode'));
 
     }
 
     public function getRepo(Request $request)
     {
-        // dd($request->username);
         $username = $request->username;
-        $client = new Client;
-        $url = 'https://api.github.com/users/' . $username . '/repos';
-        $response = $client->get($url)->getBody();
-        $repos = json_decode($response, true);
-        // dd($decode);
+        $repos = $this->gitHub->getRepo($username);
         return view('repo', compact('repos'));
     }
 
     public function getEachRepo(Request $request)
     {
-        // dd($request['url']);
-        $client = new Client;
-        $urlcommit = $request['url'] . '/commits';
-        $urlcomments = $request['url'] . '/issues';
-        $response1 = $client->get($urlcommit)->getBody();
-        $response2 = $client->get($urlcomments)->getBody();
-        $commits = json_decode($response1, true);
-        $comments = json_decode($response2, true);
-        dd($commits);
+        // dd($request);
+        $commits = $this->gitHub->getCommit($request);
+        $issues = $this->gitHub->getIssue($request);
+        $pullrequests = $this->gitHub->getPull($request);
+        // dd($commits, $issues);
+        // $
+        return view('eachrepo', compact('commits', 'issues', 'pullrequests'));
     }
 
     /**
